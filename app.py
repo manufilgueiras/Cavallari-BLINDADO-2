@@ -177,14 +177,5 @@ def access_log():
     logs = [{"ip": r[0], "user_agent": r[1], "path": r[2], "method": r[3], "consent": r[4], "created_at": r[5]} for r in rows]
     return render_template("access_log.html", logs=logs)
 
-@app.route("/cookie-consent/<choice>")
-def cookie_consent(choice):
-    response = make_response(redirect(request.referrer or url_for("index")))
-    if choice == "accept":
-        response.set_cookie("anchieta_cookie_consent", "accepted", max_age=60*60*24*30, samesite="Lax")
-    else:
-        response.set_cookie("anchieta_cookie_consent", "rejected", max_age=60*60*24*30, samesite="Lax")
-    return response
-
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=False)
