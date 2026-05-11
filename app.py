@@ -7,8 +7,6 @@ import sqlite3
 from datetime import datetime, timezone
 
 app = Flask(__name__)
-
-
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", os.urandom(24))
 
 @app.after_request
@@ -19,10 +17,9 @@ def set_security_headers(response):
     response.headers["Content-Security-Policy"] = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; object-src 'none'; base-uri 'self';"
     return response
 
-
 USERS = {
-    "admin": {"password": generate_password_hash("KicksBranco1803"), "role": "administrator"},
-    "analista": {"password": generate_password_hash("PedroMetido1808"), "role": "security_analyst"},
+    "admin": {"password": generate_password_hash("Admin@Anchieta#2024"), "role": "administrator"},
+    "analista": {"password": generate_password_hash("Analista!Seguranca%99"), "role": "security_analyst"},
 }
 
 REPORTS = {
@@ -112,12 +109,9 @@ def index():
 def search():
     q = request.args.get("q", "").lower()
     sample = ["Mapa de rede local", "Checklist de auditoria", "Documentação do portal"]
-    
-
     prova_result = None
     if "ajuda" in q:
         prova_result = {"title": "Suporte", "content": "Consulte o manual administrativo."}
-        
     return render_template("search.html", q=q, sample=sample, prova=prova_result)
 
 @app.route("/admin", methods=["GET", "POST"])
@@ -158,19 +152,14 @@ def tickets():
     conn.close()
     return render_template("tickets.html", tickets=tickets)
 
-@app.route("/profile")
-def profile():
-    if "user" not in session:
-        return redirect(url_for("admin"))
-    # Segurança IDOR: Idealmente aqui validaríamos se o ID pertence ao logado
-    user_id = request.args.get("id", "1")
-    profiles = {
-        "1": {"name": "Equipe Alpha", "sector": "SOC", "email": "alpha@anchieta.lab"},
-        "2": {"name": "Equipe Beta", "sector": "Blue Team", "email": "beta@anchieta.lab"},
-    }
-    profile = profiles.get(user_id, profiles["1"])
-    return render_template("profile.html", profile=profile, user_id=user_id)
-
+@app.route("/cookie-consent/<choice>")
+def cookie_consent(choice):
+    response = make_response(redirect(request.referrer or url_for("index")))
+    if choice == "accept":
+        response.set_cookie("anchieta_cookie_consent", "accepted", max_age=60*60*24*30, samesite="Lax")
+    else:
+        response.set_cookie("anchieta_cookie_consent", "rejected", max_age=60*60*24*30, samesite="Lax")
+    return response
 
 @app.route("/logout")
 def logout():
