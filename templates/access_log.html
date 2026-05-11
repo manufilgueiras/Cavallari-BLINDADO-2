@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Logs de acesso{% endblock %}
+{% block content %}
+<section class="glass panel">
+  <h1>Logs de acesso</h1>
+  <p class="muted">
+    Registro didático de acessos. Em produção, use aviso de privacidade, base legal adequada e retenção mínima.
+  </p>
+
+  <div class="table-wrap">
+    <table class="log-table">
+      <thead>
+        <tr>
+          <th>Data/Hora (UTC)</th>
+          <th>IP</th>
+          <th>Método</th>
+          <th>Rota</th>
+          <th>Consentimento</th>
+          <th>User-Agent</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for log in logs %}
+        <tr>
+          <td>{{ log.created_at }}</td>
+          <td>{{ log.ip }}</td>
+          <td>{{ log.method }}</td>
+          <td>{{ log.path }}</td>
+          <td>{{ log.consent }}</td>
+          <td>{{ log.user_agent }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

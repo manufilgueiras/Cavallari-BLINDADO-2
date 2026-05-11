@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Laboratório Anchieta{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script defer src="{{ url_for('static', filename='js/main.js') }}"></script>
+</head>
+<body>
+  <div class="grid-bg"></div>
+  <header class="topbar">
+    <a class="brand" href="{{ url_for('index') }}">
+      <span class="brand-mark">A</span>
+      <span>Laboratório Anchieta</span>
+    </a>
+    <nav class="nav">
+      <a href="{{ url_for('index') }}">Início</a>
+      <a href="{{ url_for('search') }}">Busca</a>
+      
+    </nav>
+  </header>
+
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+    <p>Laboratório Anchieta • Ambiente de laboratório educacional</p>
+  </footer>
+
+  {% if request.cookies.get("anchieta_cookie_consent") not in ["accepted", "rejected"] %}
+  <div class="cookie-banner glass" id="cookie-banner">
+    <div>
+      <strong>Aviso de cookies e registro de acesso</strong>
+      <p>
+        Este laboratório registra dados técnicos de acesso fins didáticos e de auditoria.
+      </p>
+    </div>
+    <div class="cookie-actions">
+      <a class="btn ghost" href="{{ url_for('cookie_consent', choice='reject') }}">Recusar</a>
+      <a class="btn primary" href="{{ url_for('cookie_consent', choice='accept') }}">Aceitar</a>
+    </div>
+  </div>
+  {% endif %}
+</body>
+</html>

@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}Usuários do sistema{% endblock %}
+{% block content %}
+<section class="glass panel">
+  <h1>Gerenciamento de usuários</h1>
+  <p class="muted">
+    Painel administrativo para criar usuários, redefinir senhas e remover contas do laboratório.
+  </p>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-stack">
+        {% for category, message in messages %}
+          <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <div class="admin-grid">
+    <article class="glass panel section-card">
+      <h2>Criar novo usuário</h2>
+      <form method="post" class="login-form">
+        <input type="hidden" name="action" value="create">
+        <label>Usuário
+          <input type="text" name="username" placeholder="ex.: visitante01">
+        </label>
+        <label>Senha
+          <input type="text" name="password" placeholder="defina uma senha">
+        </label>
+        <label>Perfil
+          <select name="role" class="select-field">
+            <option value="security_analyst">security_analyst</option>
+            <option value="administrator">administrator</option>
+            <option value="viewer">viewer</option>
+            <option value="guest">guest</option>
+          </select>
+        </label>
+        <button class="btn primary" type="submit">Criar usuário</button>
+      </form>
+    </article>
+
+    <article class="glass panel section-card">
+      <h2>Redefinir senha</h2>
+      <form method="post" class="login-form">
+        <input type="hidden" name="action" value="update_password">
+        <label>Usuário
+          <input type="text" name="target_user" placeholder="nome do usuário">
+        </label>
+        <label>Nova senha
+          <input type="text" name="new_password" placeholder="nova senha">
+        </label>
+        <button class="btn primary" type="submit">Atualizar senha</button>
+      </form>
+    </article>
+  </div>
+
+  <article class="glass panel section-card user-table-card">
+    <div class="section-head">
+      <h2>Usuários cadastrados</h2>
+      <span class="tag">{{ users_list|length }} contas</span>
+    </div>
+    <div class="table-wrap">
+      <table class="log-table">
+        <thead>
+          <tr>
+            <th>Usuário</th>
+            <th>Perfil</th>
+            <th>Ação</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for user in users_list %}
+          <tr>
+            <td>{{ user.username }}</td>
+            <td>{{ user.role }}</td>
+            <td>
+              <form method="post" class="inline-form">
+                <input type="hidden" name="action" value="delete">
+                <input type="hidden" name="target_user" value="{{ user.username }}">
+                <button class="btn danger" type="submit">Excluir</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </article>
+</section>
+{% endblock %}

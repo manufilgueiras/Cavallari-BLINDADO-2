@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<section class="glass panel">
+  <h1>Bem-vindo, {{ user }}</h1>
+  <p class="muted">Perfil: {{ role }}</p>
+  <div class="cards compact">
+    <article class="card glass">
+      <h3>Auditoria</h3>
+      <p>Checklist de serviços expostos e arquivos legados.</p>
+    </article>
+    <article class="card glass">
+      <h3>Próximos passos</h3>
+      <p>Após a auditoria, remover diretórios antigos e rever credenciais padrão.</p>
+    </article>
+  </div>
+  <div class="cta-row"><a class="btn ghost" href="{{ url_for('admin_users') }}">Gerenciar usuários</a><a class="btn ghost" href="{{ url_for('access_log') }}">Ver logs de acesso</a><a class="btn ghost" href="{{ url_for('records') }}">Ver base corporativa</a><a class="btn ghost" href="{{ url_for('logout') }}">Sair</a></div>
+</section>
+{% endblock %}

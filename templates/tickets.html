@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Chamados internos{% endblock %}
+{% block content %}
+<section class="glass panel">
+  <h1>Chamados internos</h1>
+  <p class="muted">Histórico simplificado de ocorrências do service desk.</p>
+  <div class="cards compact">
+    {% for ticket in tickets %}
+    <article class="card glass">
+      <span class="tag">#{{ ticket.id }} • {{ ticket.status }}</span>
+      <h3>{{ ticket.subject }}</h3>
+      <p><strong>Solicitante:</strong> {{ ticket.employee_name }}</p>
+      <p>{{ ticket.notes }}</p>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

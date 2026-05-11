@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Relatório{% endblock %}
+{% block content %}
+<section class="glass panel">
+  <h1>{{ report.title }}</h1>
+  <p class="muted">Relatório #{{ report_id }} • Proprietário: {{ report.owner }}</p>
+  <p>{{ report.content }}</p>
+</section>
+{% endblock %}

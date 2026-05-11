@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Busca{% endblock %}
+{% block content %}
+<section class="glass panel">
+  <h1>Busca interna</h1>
+  <form class="searchbar" method="get">
+    <input type="text" name="q" value="{{ q }}" placeholder="Pesquisar...">
+    <button class="btn primary" type="submit">Buscar</button>
+  </form>
+
+  <p class="muted">Resultado para: <strong>{{ q|safe }}</strong></p>
+{% if prova %}
+<div class="panel glass highlight">
+  <span class="tag">DOCUMENTO INTERNO</span>
+  <h2>{{ prova.title }}</h2>
+  <p>{{ prova.content }}</p>
+</div>
+{% endif %}
+
+  <div class="cards compact">
+    {% for item in sample %}
+    <article class="card glass">
+      <h3>{{ item }}</h3>
+      <p>Documento catalogado no ambiente de laboratório.</p>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

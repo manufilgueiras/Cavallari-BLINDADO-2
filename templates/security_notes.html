@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Notas de segurança{% endblock %}
+{% block content %}
+<section class="glass panel">
+  <h1>Notas do time de AppSec</h1>
+  <div class="cards compact">
+    {% for note in notes %}
+    <article class="card glass">
+      <span class="tag">AppSec</span>
+      <p>{{ note }}</p>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

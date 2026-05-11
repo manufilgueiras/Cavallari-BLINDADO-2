@@ -1,0 +1,15 @@
+# Ignorar ambientes virtuais
+.venv/
+venv/
+
+# Ignorar bancos de dados e chaves
+*.db
+*.sqlite3
+.env
+
+# Ignorar senhas em json
+users.json
+
+# Ignorar cache do python
+__pycache__/
+*.pyc

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Perfil{% endblock %}
+{% block content %}
+<section class="glass panel">
+  <h1>Perfil da equipe</h1>
+  <p class="muted">ID consultado: {{ user_id }}</p>
+  <div class="profile-grid">
+    <div>
+      <h3>{{ profile.name }}</h3>
+      <p><strong>Setor:</strong> {{ profile.sector }}</p>
+      <p><strong>E-mail:</strong> {{ profile.email }}</p>
+    </div>
+    <div class="badge-box">Acesso básico</div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Registros internos{% endblock %}
+{% block content %}
+<section class="glass panel">
+  <h1>Registros internos</h1>
+  <p class="muted">
+    Espelho simplificado do cadastro corporativo usado em testes do laboratório.
+  </p>
+  <div class="table-wrap">
+    <table class="log-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nome</th>
+          <th>Departamento</th>
+          <th>E-mail</th>
+          <th>Ramal</th>
+          <th>Badge</th>
+          <th>Nível de acesso</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for employee in employees %}
+        <tr>
+          <td>{{ employee.id }}</td>
+          <td>{{ employee.full_name }}</td>
+          <td>{{ employee.department }}</td>
+          <td>{{ employee.email }}</td>
+          <td>{{ employee.extension }}</td>
+          <td>{{ employee.badge_id }}</td>
+          <td>{{ employee.access_level }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

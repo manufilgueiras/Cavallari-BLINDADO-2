@@ -1,0 +1,3 @@
+[2026-04-02] INFO: AppSec iniciou revisão da busca pública.
+[2026-04-02] WARNING: Componente antigo renderizava entrada sem escape.
+[2026-04-02] INFO: Aplicada correção com escape contextual e CSP restritiva.
