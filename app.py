@@ -18,8 +18,8 @@ def set_security_headers(response):
     return response
 
 USERS = {
-    "admin": {"password": generate_password_hash("Admin@Anchieta#2024"), "role": "administrator"},
-    "analista": {"password": generate_password_hash("Analista!Seguranca%99"), "role": "security_analyst"},
+    "admin": {"password": generate_password_hash("KicksBranco1803"), "role": "administrator"},
+    "analista": {"password": generate_password_hash("ADS1808"), "role": "security_analyst"},
 }
 
 REPORTS = {
