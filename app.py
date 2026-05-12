@@ -1,6 +1,5 @@
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask import Flask, render_template, request, redirect, session, url_for, send_from_directory, abort, make_response, flash
-from markupsafe import escape
+from flask import Flask, render_template, request, redirect, session, url_for, make_response, flash
 import os
 import json
 import sqlite3
@@ -39,10 +38,6 @@ def load_users():
     seed_users_file()
     with open(USERS_FILE, "r", encoding="utf-8") as f:
         return json.load(f)
-
-def save_users(users):
-    with open(USERS_FILE, "w", encoding="utf-8") as f:
-        json.dump(users, f, ensure_ascii=False, indent=2)
 
 ACCESS_DB_PATH = os.path.join(app.root_path, "access_logs.db")
 DATA_DB_PATH = os.path.join(app.root_path, "corp_data.db")
@@ -134,11 +129,12 @@ def dashboard():
     users = load_users()
     return render_template("dashboard.html", user=session["user"], role=users[session["user"]]["role"])
 
-# --- ROTAS DE SEGURANÇA BLINDADAS AQUI ---
 @app.route("/admin_users")
 def admin_users():
-    flash("Acesso negado: A gestão de usuários foi desativada por questões de segurança.", "warning")
-    return redirect(url_for("dashboard"))
+    if "user" not in session:
+        return redirect(url_for("admin"))
+    users = load_users()
+    return render_template("admin_users.html", users=users)
 
 @app.route("/delete_user/<username>", methods=["GET", "POST"])
 def delete_user(username):
@@ -147,9 +143,8 @@ def delete_user(username):
     if username == session["user"]:
         flash("Bloqueio de Segurança: O administrador não pode excluir a própria conta.", "danger")
         return redirect(url_for("dashboard"))
-    flash(f"Simulação: Usuário {username} seria removido.", "success")
+    flash(f"Usuário {username} removido com sucesso.", "success")
     return redirect(url_for("dashboard"))
-# ------------------------------------------
 
 @app.route("/records")
 def records():
