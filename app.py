@@ -22,6 +22,8 @@ USERS = {
 }
 
 USERS_FILE = os.path.join(app.root_path, "users.json")
+ACCESS_DB_PATH = os.path.join(app.root_path, "access_logs.db")
+DATA_DB_PATH = os.path.join(app.root_path, "corp_data.db")
 
 def seed_users_file():
     if not os.path.exists(USERS_FILE):
@@ -36,9 +38,6 @@ def load_users():
 def save_users(users):
     with open(USERS_FILE, "w", encoding="utf-8") as f:
         json.dump(users, f, ensure_ascii=False, indent=2)
-
-ACCESS_DB_PATH = os.path.join(app.root_path, "access_logs.db")
-DATA_DB_PATH = os.path.join(app.root_path, "corp_data.db")
 
 def get_data_connection():
     conn = sqlite3.connect(DATA_DB_PATH)
@@ -97,6 +96,15 @@ def index():
         {"title": "Documentos históricos preservados para auditoria", "tag": "INFO"},
     ]
     return render_template("index.html", news=news)
+
+@app.route("/search")
+def search():
+    q = request.args.get("q", "").lower()
+    sample = ["Mapa de rede local", "Checklist de auditoria", "Documentação do portal"]
+    prova_result = None
+    if "ajuda" in q:
+        prova_result = {"title": "Suporte", "content": "Consulte o manual administrativo."}
+    return render_template("search.html", q=q, sample=sample, prova=prova_result)
 
 @app.route("/admin", methods=["GET", "POST"])
 def admin():
@@ -175,6 +183,18 @@ def records():
         employees = []
     conn.close()
     return render_template("records.html", employees=employees)
+
+@app.route("/tickets")
+def tickets():
+    if "user" not in session:
+        return redirect(url_for("admin"))
+    conn = get_data_connection()
+    try:
+        tickets = conn.execute("SELECT * FROM support_tickets ORDER BY id DESC").fetchall()
+    except:
+        tickets = []
+    conn.close()
+    return render_template("tickets.html", tickets=tickets)
 
 @app.route("/access_log")
 def access_log():
