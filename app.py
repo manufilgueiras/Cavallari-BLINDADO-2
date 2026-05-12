@@ -161,8 +161,15 @@ def delete_user(username):
     if "user" not in session:
         return redirect(url_for("admin"))
     
+    if session["user"] != "admin":
+        flash("Acesso Negado: Apenas o administrador possui permissão para excluir usuários.", "danger")
+        return redirect(url_for("admin_users"))
+    
     users = load_users()
-    if username == session["user"]:
+    
+    if username in ["admin", "analista"]:
+        flash(f"Bloqueio de Segurança: A conta '{username}' é vital para o sistema e não pode ser apagada.", "danger")
+    elif username == session["user"]:
         flash("Bloqueio de Segurança: O administrador não pode excluir a própria conta.", "danger")
     else:
         if username in users:
