@@ -2,6 +2,9 @@
 {% block title %}Usuários do sistema{% endblock %}
 {% block content %}
 <section class="glass panel">
+  
+  <a href="{{ url_for('dashboard') }}" class="btn ghost" style="margin-bottom: 20px; display: inline-block;">&larr; Voltar ao Painel</a>
+
   <h1>Gerenciamento de usuários</h1>
   <p class="muted">
     Painel administrativo para criar usuários, redefinir senhas e remover contas do laboratório.
