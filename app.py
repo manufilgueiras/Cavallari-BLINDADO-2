@@ -21,12 +21,6 @@ USERS = {
     "analista": {"password": generate_password_hash("ADS1808"), "role": "security_analyst"},
 }
 
-REPORTS = {
-    1: {"owner": "Equipe Alpha", "title": "Relatório Interno 01", "content": "Checklist de exposição de portas e serviços."},
-    2: {"owner": "Equipe Beta", "title": "Relatório Interno 02", "content": "Não deixar diretórios sensíveis acessíveis."},
-    3: {"owner": "Equipe Gama", "title": "Relatório Interno 03", "content": "Evitar credenciais padrão em produção."},
-}
-
 USERS_FILE = os.path.join(app.root_path, "users.json")
 
 def seed_users_file():
@@ -38,6 +32,10 @@ def load_users():
     seed_users_file()
     with open(USERS_FILE, "r", encoding="utf-8") as f:
         return json.load(f)
+
+def save_users(users):
+    with open(USERS_FILE, "w", encoding="utf-8") as f:
+        json.dump(users, f, ensure_ascii=False, indent=2)
 
 ACCESS_DB_PATH = os.path.join(app.root_path, "access_logs.db")
 DATA_DB_PATH = os.path.join(app.root_path, "corp_data.db")
@@ -100,15 +98,6 @@ def index():
     ]
     return render_template("index.html", news=news)
 
-@app.route("/search")
-def search():
-    q = request.args.get("q", "").lower()
-    sample = ["Mapa de rede local", "Checklist de auditoria", "Documentação do portal"]
-    prova_result = None
-    if "ajuda" in q:
-        prova_result = {"title": "Suporte", "content": "Consulte o manual administrativo."}
-    return render_template("search.html", q=q, sample=sample, prova=prova_result)
-
 @app.route("/admin", methods=["GET", "POST"])
 def admin():
     error = None
@@ -129,22 +118,51 @@ def dashboard():
     users = load_users()
     return render_template("dashboard.html", user=session["user"], role=users[session["user"]]["role"])
 
-@app.route("/admin_users")
+@app.route("/admin_users", methods=["GET", "POST"])
 def admin_users():
     if "user" not in session:
         return redirect(url_for("admin"))
+    
     users = load_users()
+    
+    if request.method == "POST":
+        action = request.form.get("action")
+        if action == "create":
+            u = request.form.get("username")
+            p = request.form.get("password")
+            r = request.form.get("role")
+            if u and p:
+                users[u] = {"password": generate_password_hash(p), "role": r}
+                save_users(users)
+                flash(f"Usuário {u} criado com sucesso!", "success")
+        
+        elif action == "update_password":
+            u = request.form.get("target_user")
+            p = request.form.get("new_password")
+            if u in users and p:
+                users[u]["password"] = generate_password_hash(p)
+                save_users(users)
+                flash(f"Senha de {u} atualizada!", "success")
+        
+        return redirect(url_for("admin_users"))
+
     return render_template("admin_users.html", users=users)
 
-@app.route("/delete_user/<username>", methods=["GET", "POST"])
+@app.route("/delete_user/<username>", methods=["POST"])
 def delete_user(username):
     if "user" not in session:
         return redirect(url_for("admin"))
+    
+    users = load_users()
     if username == session["user"]:
         flash("Bloqueio de Segurança: O administrador não pode excluir a própria conta.", "danger")
-        return redirect(url_for("dashboard"))
-    flash(f"Usuário {username} removido com sucesso.", "success")
-    return redirect(url_for("dashboard"))
+    else:
+        if username in users:
+            del users[username]
+            save_users(users)
+            flash(f"Usuário {username} removido com sucesso.", "success")
+    
+    return redirect(url_for("admin_users"))
 
 @app.route("/records")
 def records():
@@ -157,18 +175,6 @@ def records():
         employees = []
     conn.close()
     return render_template("records.html", employees=employees)
-
-@app.route("/tickets")
-def tickets():
-    if "user" not in session:
-        return redirect(url_for("admin"))
-    conn = get_data_connection()
-    try:
-        tickets = conn.execute("SELECT * FROM support_tickets ORDER BY id DESC").fetchall()
-    except:
-        tickets = []
-    conn.close()
-    return render_template("tickets.html", tickets=tickets)
 
 @app.route("/access_log")
 def access_log():

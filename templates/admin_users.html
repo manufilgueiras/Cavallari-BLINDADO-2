@@ -20,13 +20,13 @@
   <div class="admin-grid">
     <article class="glass panel section-card">
       <h2>Criar novo usuário</h2>
-      <form action="{{ url_for('dashboard') }}" method="get" class="login-form">
+      <form action="{{ url_for('admin_users') }}" method="post" class="login-form">
         <input type="hidden" name="action" value="create">
         <label>Usuário
-          <input type="text" name="username" placeholder="ex.: visitante01">
+          <input type="text" name="username" placeholder="ex.: visitante01" required>
         </label>
         <label>Senha
-          <input type="text" name="password" placeholder="defina uma senha">
+          <input type="password" name="password" placeholder="defina uma senha" required>
         </label>
         <label>Perfil
           <select name="role" class="select-field">
@@ -36,21 +36,21 @@
             <option value="guest">guest</option>
           </select>
         </label>
-        <button class="btn primary" type="submit">Criar usuário (Simulado)</button>
+        <button class="btn primary" type="submit">Criar usuário</button>
       </form>
     </article>
 
     <article class="glass panel section-card">
       <h2>Redefinir senha</h2>
-      <form action="{{ url_for('dashboard') }}" method="get" class="login-form">
+      <form action="{{ url_for('admin_users') }}" method="post" class="login-form">
         <input type="hidden" name="action" value="update_password">
         <label>Usuário
-          <input type="text" name="target_user" placeholder="nome do usuário">
+          <input type="text" name="target_user" placeholder="nome do usuário" required>
         </label>
         <label>Nova senha
-          <input type="text" name="new_password" placeholder="nova senha">
+          <input type="password" name="new_password" placeholder="nova senha" required>
         </label>
-        <button class="btn primary" type="submit">Atualizar senha (Simulado)</button>
+        <button class="btn primary" type="submit">Atualizar senha</button>
       </form>
     </article>
   </div>
