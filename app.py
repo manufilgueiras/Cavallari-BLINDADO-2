@@ -134,12 +134,32 @@ def dashboard():
     users = load_users()
     return render_template("dashboard.html", user=session["user"], role=users[session["user"]]["role"])
 
+# --- ROTAS DE SEGURANÇA BLINDADAS AQUI ---
+@app.route("/admin_users")
+def admin_users():
+    flash("Acesso negado: A gestão de usuários foi desativada por questões de segurança.", "warning")
+    return redirect(url_for("dashboard"))
+
+@app.route("/delete_user/<username>", methods=["GET", "POST"])
+def delete_user(username):
+    if "user" not in session:
+        return redirect(url_for("admin"))
+    if username == session["user"]:
+        flash("Bloqueio de Segurança: O administrador não pode excluir a própria conta.", "danger")
+        return redirect(url_for("dashboard"))
+    flash(f"Simulação: Usuário {username} seria removido.", "success")
+    return redirect(url_for("dashboard"))
+# ------------------------------------------
+
 @app.route("/records")
 def records():
     if "user" not in session:
         return redirect(url_for("admin"))
     conn = get_data_connection()
-    employees = conn.execute("SELECT * FROM employees ORDER BY id").fetchall()
+    try:
+        employees = conn.execute("SELECT * FROM employees ORDER BY id").fetchall()
+    except:
+        employees = []
     conn.close()
     return render_template("records.html", employees=employees)
 
@@ -148,9 +168,22 @@ def tickets():
     if "user" not in session:
         return redirect(url_for("admin"))
     conn = get_data_connection()
-    tickets = conn.execute("SELECT * FROM support_tickets ORDER BY id DESC").fetchall()
+    try:
+        tickets = conn.execute("SELECT * FROM support_tickets ORDER BY id DESC").fetchall()
+    except:
+        tickets = []
     conn.close()
     return render_template("tickets.html", tickets=tickets)
+
+@app.route("/access_log")
+def access_log():
+    if "user" not in session:
+        return redirect(url_for("admin"))
+    conn = sqlite3.connect(ACCESS_DB_PATH)
+    rows = conn.execute("SELECT ip, user_agent, path, method, consent, created_at FROM access_log ORDER BY id DESC LIMIT 100").fetchall()
+    conn.close()
+    logs = [{"ip": r[0], "user_agent": r[1], "path": r[2], "method": r[3], "consent": r[4], "created_at": r[5]} for r in rows]
+    return render_template("access_log.html", logs=logs)
 
 @app.route("/cookie-consent/<choice>")
 def cookie_consent(choice):
@@ -166,16 +199,6 @@ def logout():
     session.clear()
     flash("Sessão encerrada com sucesso.", "success")
     return redirect(url_for("index"))
-
-@app.route("/access_log")
-def access_log():
-    if "user" not in session:
-        return redirect(url_for("admin"))
-    conn = sqlite3.connect(ACCESS_DB_PATH)
-    rows = conn.execute("SELECT ip, user_agent, path, method, consent, created_at FROM access_log ORDER BY id DESC LIMIT 100").fetchall()
-    conn.close()
-    logs = [{"ip": r[0], "user_agent": r[1], "path": r[2], "method": r[3], "consent": r[4], "created_at": r[5]} for r in rows]
-    return render_template("access_log.html", logs=logs)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=False)
